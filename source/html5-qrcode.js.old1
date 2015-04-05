@@ -54,18 +54,16 @@ APP.QR=(function( $ ){
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
     navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
+  var videoSelect = null;
     
   function gotSources(sourceInfos) {
     for (var i = 0; i != sourceInfos.length; ++i) {
       var sourceInfo = sourceInfos[i];
-      if (sourceInfo.kind === 'video'  && sourceInfo.facing === 'environment') {
-	var constraints = {
-            video: {
-                optional: [{sourceId: sourceInfo.id}]
-            },
-            audio : false
-          };
-        navigator.getUserMedia(constraints, successCallback, videoError);
+      var option = document.createElement("option");
+      option.value = sourceInfo.id;
+      if (sourceInfo.kind === 'video') {
+        option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+        videoSelect.appendChild(option);
       }
     }
   }
@@ -73,7 +71,12 @@ APP.QR=(function( $ ){
   // Got Sources only work on Chrome Right now, not on FF. 
   if (typeof MediaStreamTrack !== 'undefined' &&
       typeof(MediaStreamTrack.getSources) != 'undefined' ){
-
+    var selectSourceTag = "<BR/><select id='videoSource'></select>"
+    this.append(selectSourceTag);
+    videoSelect = document.querySelector("#videoSource");
+    $( "#videoSource" ).change(function() {
+      start();
+    });
     MediaStreamTrack.getSources(gotSources);
   }  
     
@@ -96,7 +99,7 @@ APP.QR=(function( $ ){
         window.stream.stop();
       }
       // Call the getUserMedia method with our callback functions
-      /*if (navigator.getUserMedia) {
+      if (navigator.getUserMedia) {
         constraints = { video: true, audio : false };
         if (videoSelect != null ){  
           var videoSource = videoSelect.value;
@@ -110,7 +113,7 @@ APP.QR=(function( $ ){
         navigator.getUserMedia(constraints, successCallback, videoError);
       } else {
         console.log('Native web camera streaming (getUserMedia) not supported in this browser.');
-      } */
+      }
 
       qrcode.callback = qrcodeSuccess;
     }
