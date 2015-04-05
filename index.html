@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" manifest="offline.manifest.php">
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+		<script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				var APP_START_FAILED = "You have been disconnected from the magic. You don't have to start over, but you do need to visit the Wizard Head to reinitialize your powers.";
+				function startWithResources(resources, storeResources) {
+
+					// Try to execute the Javascript
+					try {
+						eval(resources.js);
+						APP.applicationController.start(resources, storeResources);
+
+					// If the Javascript fails to launch, stop execution!
+					} catch (e) {
+						alert(APP_START_FAILED);
+					}
+				}
+				function startWithOnlineResources(resources) {
+					startWithResources(resources, true);
+				}
+
+				function startWithOfflineResources() {
+					var resources;
+
+					// If we have resources saved from a previous visit, use them
+					if (localStorage && localStorage.resources) {
+						resources = JSON.parse(localStorage.resources);
+						startWithResources(resources, false);
+
+					// Otherwise, apologize and let the user know
+					} else {
+						alert(APP_START_FAILED);
+					}
+				}
+
+				// If we know the device is offline, don't try to load new resources
+				if (navigator && navigator.onLine === false) {
+					startWithOfflineResources();
+
+				// Otherwise, download resources, eval them, if successful push them into local storage.
+				} else {
+					$.ajax({
+						url: 'api/resources/',
+						success: startWithOnlineResources,
+						error: startWithOfflineResources,
+						dataType: 'json'
+					});
+				}
+
+			}); 
+		</script>
+		<title>Wizard's Quest</title>
+	</head>
+<body>
+	<div id="loading">Loading&hellip;</div>
+	
+</body>
+</html>
