@@ -4,13 +4,11 @@
 $js = '';
 $js = $js . 'window.APP={}; (function (APP) {';
 $js = $js . file_get_contents('../../source/application/applicationcontroller.js');
-$js = $js . file_get_contents('../../source/articles/articlescontroller.js');
-$js = $js . file_get_contents('../../source/articles/article.js');
 $js = $js . file_get_contents('../../source/database.js');
 $js = $js . file_get_contents('../../source/templates.js');
 $js = $js . file_get_contents('../../lib/html5-qrcode.min.js');
 $js = $js . file_get_contents('../../source/html5-qrcode.js');
-$js = $js . file_get_contents('../../source/CameraSelector.js');
+$js = $js . file_get_contents('../../source/html5-qrcode-ios.js');
 $js = $js . '}(APP));';
 $output['js'] = $js;
 
